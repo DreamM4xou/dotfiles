@@ -1,0 +1,218 @@
+snippet cl
+	console.log(${1});
+snippet pro
+	return new Promise((resolve, reject) => {
+		${1}
+	});
+snippet .catch
+	.catch(err => {
+		reject(err);
+		throw new Error(err);
+	});
+snippet it
+	it("${1}", function(done) {
+		${2}
+	});
+snippet chai
+	"use strict";
+	const chai = require("chai");
+	const dirtyChai = require("dirty-chai");
+	const expect = chai.expect;
+	chai.use(dirtyChai);
+
+	describe("${1}", function() {
+	    const container = require("../../utils/ContainerMocker.js");
+	    ${2}
+
+	    it("container", function(done) {
+	    	expect(container).to.be.ok();
+	    	done();
+	    });
+	});
+snippet vue
+	<template src='${1}'></template>
+	<script>
+
+	export default {
+		init() {
+			this.${2:}Controller = require('../../controllers/${3}/$2Controller.js');
+			this.${4:c}ontroller = new this.$2Controller();
+			this.EventBusFactory = require('../../services/EventManager/EventBusFactory.js');
+			this.eventBusFactory = this.EventBusFactory.getInstance();
+			this.eventError = this.eventBusFactory.get('error');
+		},
+		props: {
+			${5}
+		},
+		data() {
+			return {};
+		},
+		ready() {
+			this.init();
+		},
+		methods: {
+			init() {
+			}
+		}
+	};
+	</script>
+snippet jsons
+	JSON.stringify(${1})
+snippet jsonp
+	JSON.parse(${1})
+snippet clone
+	JSON.parse(JSON.stringify(${1}))
+snippet api
+	const Api = require("../Api");
+	module.exports = class ${1}Api extends Api {
+		${2}() {
+			return super.query("${3}"
+			, "${4}");
+		}
+	};
+snippet controller
+	const Controller = require("../Controller");
+	const ${1:}Api = require('../../api/${2}/$1Api.js');
+	const ${3:a}pi = new $1Api();
+	module.exports = class $1Controller extends Controller {
+		${4}(${5:}) {
+			return new Promise((resolve, reject) => {
+				$3pi.${6}($6)
+				.then(out => {
+					${7}
+				}).catch(err => {
+					reject(err);
+				});
+			});
+		}
+	};
+snippet coll
+	coll = new ModelCollection(${1:out}, ${2}Model);
+	if (!coll.isValid()) return reject(coll.getInvalidReasons());
+	coll = coll.exportFor${3:Front}end();
+snippet mod
+	model = new ${1}Model(${2:out});
+	if (!model.isValid()) return reject(model.getInvalidReasons());
+	model = model.exportFor${3:Front}end();
+snippet model
+	const Model = require("../Model");
+	const $map = [
+		{
+			pathFront: "${1:id}",
+			pathBack: "$1",
+			pk: true
+		},
+		{
+			pathFront: "${2:libelle}",
+			pathBack: "$2",
+			type: ${3:String}
+		}
+	];
+
+	module.exports = class ${4} extends Model {
+		constructor(data, opts) {
+			super($map, data, opts);
+		}
+	};
+snippet eventbus
+	const EventBusFactory = require('../../services/EventManager/EventBusFactory.js');
+	const eventBusFactory = EventBusFactory.getInstance();
+	const $eventError = eventBusFactory('error');
+snippet event
+	"use strict";
+	const EventController = require('../../EventController.js');
+	// const $err = {};
+
+	class ${1:}Events extends EventController {
+		constructor(io, container) {
+			super(container);
+			this.io = io;
+			this.$1Repo = container.get("$1Repo");
+		}
+
+		/**
+		 * Enregistre les controllers du controller
+		 */
+		register() {
+			this.io.on('connect', socket => {
+				socket.on("${2}", () => {
+					let e = "${3}";
+					this.$1Repo.${4}()
+					.then(out => {
+						socket.emit(e, null, out);
+					}).catch(err => {
+						this.emitError(socket, e, err);
+					});
+				});
+			});
+		}
+	}
+	module.exports = $1Events;
+snippet bookshelf
+	'use strict';
+	var Bookshelf = require('../../../config/Bookshelf');
+
+	module.exports = Bookshelf.model('${1}', {
+		tableName: '${2}',
+		idAttribute: '${3:id}',
+		hasTimestamps: true,
+		fields: {
+			${4:id}: {
+				path: "$4",
+				pk: true
+			},
+			${5:}: {
+				path: "$5",
+				type: String
+			}
+		},
+		rels: {
+		}
+	});
+snippet gly
+	<span class="glyphicon glyphicon-${1}"></span>
+snippet type
+	const BaseType = require("../BaseType.js");
+	const BaseTypeFactory = require("../BaseTypeFactory.js");
+	const Schema = require("../../models${1}");
+
+	/**
+	 * @class ${2:}Type
+	 * @type {$2Type}
+	 */
+	class $2Type extends BaseType {
+		constructor(container, data) {
+			super(container, Schema, data);
+		}
+	}
+	module.exports = class $2TypeFacto extends BaseTypeFactory {
+		constructor(container) {
+			super(container, $2Type);
+		}
+	};
+snippet typ
+	${1:data} = ${2:this.}Type.make($1);
+	if (!$1.isValid()) return ${3:this.emitError}(${4:}$1.getInvalidReasons());
+snippet colltyp
+	${1:data} = new ${2:this.Type}Collection($1, ${3:this.}Type);
+	if (!$1.isPerfect()) {
+		return ${4:this.emitError}(${5:}$1.getInvalidReasons());
+	}
+snippet blade
+	@extends('extranet.layouts.default')
+	@section('content')
+	<${1:template}></$1>
+	@endsection
+snippet html
+	<div class="${1}">
+		<div class="container${2:-fluid}">
+			<div>
+				<h3 class="page-title">[[lang('${3}')]]</h3>
+			</div>
+			<div class="card col-xs-12">
+				${4}
+			</div>
+		</div>
+	</div>
+snippet clj
+	console.log(JSON.stringify(${1}, null, 4));
