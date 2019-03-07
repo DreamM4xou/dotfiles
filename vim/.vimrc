@@ -1,6 +1,7 @@
 
 if 0 | endif
 
+
 if &compatible
   set nocompatible               " Be iMproved
 endif
@@ -37,6 +38,7 @@ NeoBundle 'kshenoy/vim-signature'
 NeoBundle 'tomtom/tlib_vim'
 NeoBundle 'marcweber/vim-addon-mw-utils'
 NeoBundle 'garbas/vim-snipmate'
+NeoBundle 'ConradIrwin/vim-bracketed-paste'
 
 NeoBundle "terryma/vim-multiple-cursors"
 
@@ -59,12 +61,17 @@ NeoBundle 'nightsense/seabird'
 NeoBundle 'marcopaganini/termschool-vim-theme'
 
 " --------- JS --------- "
-NeoBundleLazy 'maralla/completor.vim', {'autoload':{'filetypes':['javascript', 'vue']}}
+" NeoBundle 'jelera/vim-javascript-syntax'
+NeoBundle 'Sefima/vim-nearest-complete-improved'
+" NeoBundleLazy 'maralla/completor.vim', {'autoload':{'filetypes':['javascript', 'vue']}}
 NeoBundleLazy 'w0rp/ale', {'autoload':{'filetypes':['javascript', 'vue', 'css', 'scss', 'sass']}}
 NeoBundleLazy 'jelera/vim-javascript-syntax', {'autoload':{'filetypes':['javascript', 'vue']}}
 NeoBundleLazy 'vim-scripts/JavaScript-Indent', {'autoload':{'filetypes':['javascript', 'vue']}}
 NeoBundleLazy 'heavenshell/vim-jsdoc', {'autoload':{'filetypes':['javascript', 'vue']}}
-NeoBundleLazy 'ternjs/tern_for_vim', {'autoload':{'filetypes':['javascript', 'vue']}}
+" NeoBundleLazy 'ternjs/tern_for_vim', {'autoload':{'filetypes':['javascript', 'vue']}}
+
+" Vue linter "
+" NeoBundleLazy 'posva/vim-vue', {'autoload':{'filetypes':['vue']}}
 
 call neobundle#end()
 
@@ -111,7 +118,6 @@ set history=75
 set undolevels=75
 set title
 set nobackup
-set foldcolumn=1
 set path+=**
 " --- Tabs & indents
 set tabstop=4
@@ -125,6 +131,14 @@ set clipboard=unnamed
 set wrap
 set wildmenu
 set wildignore+=*/node_modules/*,*/vendor/*
+
+" --- folds
+set viewoptions=cursor,folds,slash,unix
+set fdm=indent
+set fdc=1
+set fdl=1
+set nofen
+
 
 "--- Macvim Stuff ----"
 set guioptions-=r
@@ -156,7 +170,6 @@ vmap n[ c[<C-r>"]<esc>
 vmap n( c(<C-r>")<esc>
 vmap n{ c{<C-r>"}<esc>
 vmap n<space> c<space><C-r>"<space><esc>
-vmap * y/<C-r>"<CR>
 
 nmap <leader>w :w!<cr>
 nmap <leader>q :q!<cr>
@@ -177,11 +190,42 @@ nmap <leader>Y <Plug>yankstack_substitute_new_paste
 "
 nnoremap <leader><space> :Buffer<cr>
 nnoremap <leader>p :GFiles<cr>
-nnoremap <leader>f :Lines<cr>
+" nnoremap <leader>f :Lines<cr>
 " nnoremap <leader>r :TagbarToggle<cr>
 nnoremap <leader>r :<C-u>Unite -no-split -buffer-name=outline -start-insert outline<cr>
 
-set statusline=%<%f:%{ALEGetStatusLine()}\ %h%m%r%=%{fugitive#statusline()}\ \ %-14.(%l,%c%V%)\%p%%
+let g:auto_folds_toggle = 0
+function! g:ToggleAutoFolds()
+    if (g:auto_folds_toggle == 0)
+        let g:auto_folds_toggle = 1
+        set fen
+        echo "fold enable"
+    else
+        let g:auto_folds_toggle = 0
+        set nofen
+        echo "fold disable"
+    endif
+endfunction
+nmap <leader>f :call ToggleAutoFolds()<CR>
+" function! g:ToggleAutoFolds(mode)
+"     if (a:mode == 'manual')
+"         let g:auto_folds_toggle = 'manual'
+"         set fdm = 'manual'
+"         set fen
+"     else if (a:mode == 'enable')
+"         let g:auto_folds_toggle = 'indent'
+"         set fdm = 'indent'
+"         set fen
+"     else if (a:mode == 'disable')
+"         let g:auto_folds_toggle = 'disable'
+"         set nofen
+"     endif
+" endfunction
+" nmap <leader>fm :call ToggleAutoFolds('manual')<C-R>
+" nmap <leader>fi :call ToggleAutoFolds('indent')<C-R>
+" nmap <leader>fd :call ToggleAutoFolds('disable')<C-R>
+
+" set statusline=%<%f:%{ALEGetStatusLine()}\ %h%m%r%=%{fugitive#statusline()}\ \ %-14.(%l,%c%V%)\%p%%
 "set statusline=%<%f\ %h%m%r%=%{fugitive#statusline()}\ \ %-14.(%l,%c%V%)\%p%%
 
 "---- Case Motions -----"
@@ -194,9 +238,6 @@ map <silent> ge <Plug>CamelCaseMotion_ge
 "--- Nedtree ----"
 nmap <C-b> :NERDTreeToggle<CR>
 nmap <C-f> :NERDTreeFind<CR>
-let g:fzf_launcher="/Users/leo/.vim/fzfMacvim.vim %s"
-
-
 
 "------ Ale ------
 
@@ -205,16 +246,20 @@ let g:ale_linters = {
             \   'php': ['phpcs']
             \}
 let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
+let g:ale_linter_aliases = {'vue': ['javascript', 'html', 'scss', 'eslint-plugin-vue']}
 
 "---- Removes Trailing Spaces on save ----"
 autocmd BufWritePre * %s/\s\+$//e
 
-" --- auto set type is js for vue files ----
-au BufRead,BufNewFile *.vue set filetype=javascript
 au BufRead,BufNewFile *.twig set filetype=html
 
+" --- auto set type is js for vue files ----
+" au BufRead,BufNewFile *.vue set filetype=javascript
+autocmd BufNewFile,BufRead *.vue set filetype=vue.javascript
+ au BufNewFile,BufRead *.vue syntax sync fromstart
+
 " --- Syntastic ---"
-let g:syntastic_javascript_checkers = ['eslint']
+" let g:syntastic_javascript_checkers = ['eslint']
 
 " --- Completor PHP trigger ---- "
 "  referred : https://github.com/maralla/completor.vim/issues/24
@@ -230,6 +275,7 @@ let g:jsdoc_underscore_private = 1
 let g:jsdoc_enable_es6 = 1
 
 map <leader>d :JsDoc <cr>
+vmap * y/<C-r>"<CR>
 
 " --- Completor ---"
 let g:completor_min_chars=3
@@ -250,11 +296,7 @@ let g:ale_sign_column_always = 1
 "Tagbag
 let g:tagbar_ctags_bin='/usr/bin/ctags-exuberant'
 
-" " UltiSnips
-" let g:UltiSnipsSnippetDirectories = ['~/Documents/projects/perso/dotfiles-that-fly/vim/snippets']
-"
-" " let g:UltiSnipsSnippetsDir = ['~/Documents/projects/perso/dotfiles-that-fly/vim/snippets']
-" " let g:UltiSnipsExpandTrigger="<tab>"
+" let g:UltiSnipsExpandTrigger="<tab>"
 " let g:UltiSnipsJumpForwardTrigger="<c-b>"
 " let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 "
@@ -265,3 +307,27 @@ nnoremap ,catch :-1read ~/.vim/skeletons/catch<CR>j
 
 set runtimepath^=~/.vim/bundle/ag
 
+function! LinterStatus() abort
+   let l:counts = ale#statusline#Count(bufnr(''))
+
+   let l:all_errors = l:counts.error + l:counts.style_error
+   let l:all_non_errors = l:counts.total - l:all_errors
+
+   return l:counts.total == 0 ? 'OK' : printf(
+               \   '%dW %dE',
+               \   all_non_errors,
+               \   all_errors
+               \)
+endfunction
+
+" --- Completor ---
+set completefunc=NearestComplete
+set completeopt=menu
+
+inoremap <silent><expr> <C-n>      pumvisible() ? "\<C-n>" : "\<C-x><C-u>"
+imap <expr> <Esc>      pumvisible() ? "\<C-e>" : "\<Esc>"
+imap <expr> <CR>       pumvisible() ? "\<C-y>" : "\<CR>"
+" ---
+
+" minimal status line (displays git repo)
+set statusline=%<%f=%{LinterStatus()}\ %h%m%r%=%{fugitive#statusline()}\ \ %-14.(%l,%c%V%)\%p%%
