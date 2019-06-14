@@ -10,8 +10,8 @@ snippet .catch
 		throw new Error(err);
 	});
 snippet it
-	it("${1}", function(done) {
-		${2}
+	it("${1}", function(${2}) {
+		${3}
 	});
 snippet chai
 	"use strict";
@@ -40,18 +40,24 @@ snippet vue
 			this.EventBusFactory = require('../../services/EventManager/EventBusFactory.js');
 			this.eventBusFactory = this.EventBusFactory.getInstance();
 			this.eventError = this.eventBusFactory.get('error');
+			this.pageHelper = require('../../helpers/display/PageHelper.js')
 		},
 		props: {
 			${5}
 		},
 		data() {
-			return {};
+			return {
+				meta: {
+					page_name: "${6}"
+				}
+			};
 		},
 		ready() {
 			this.init();
 		},
 		methods: {
 			init() {
+				this.pageHelper.setPageName(this.$get('meta.page_name'));
 			}
 		}
 	};
@@ -216,3 +222,7 @@ snippet html
 	</div>
 snippet clj
 	console.log(JSON.stringify(${1}, null, 4));
+snippet clm
+	console.log(${1:}, "$1");
+snippet athen
+	}).then(${1:()} => {
