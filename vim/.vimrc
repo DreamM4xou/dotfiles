@@ -39,6 +39,10 @@ NeoBundle 'tomtom/tlib_vim'
 NeoBundle 'marcweber/vim-addon-mw-utils'
 NeoBundle 'garbas/vim-snipmate'
 NeoBundle 'ConradIrwin/vim-bracketed-paste'
+NeoBundle 'jreybert/vimagit'
+NeoBundle 'iamcco/markdown-preview.nvim'
+
+
 
 NeoBundle "terryma/vim-multiple-cursors"
 
@@ -134,10 +138,10 @@ set wildignore+=*/node_modules/*,*/vendor/*
 
 " --- folds
 set viewoptions=cursor,folds,slash,unix
-set fdm=indent
+set fdm=manual
 set fdc=1
 set fdl=1
-set nofen
+" set nofen " no fold enable
 
 
 "--- Macvim Stuff ----"
@@ -177,7 +181,8 @@ nmap <leader>q :q!<cr>
 nmap <leader>o :only<cr>
 set backupdir=~/.vim/backup//
 set directory=~/.vim/swap//
-set undodir=~/.vim/undo//
+set undodir=~/.vim/undodir
+set undofile
 nnoremap <Left> :vertical resize -2<CR>
 nnoremap <Right> :vertical resize +2<CR>
 nnoremap <Up> :resize -2<CR>
@@ -194,19 +199,20 @@ nnoremap <leader>p :GFiles<cr>
 " nnoremap <leader>r :TagbarToggle<cr>
 nnoremap <leader>r :<C-u>Unite -no-split -buffer-name=outline -start-insert outline<cr>
 
-let g:auto_folds_toggle = 0
-function! g:ToggleAutoFolds()
-    if (g:auto_folds_toggle == 0)
-        let g:auto_folds_toggle = 1
-        set fen
-        echo "fold enable"
-    else
-        let g:auto_folds_toggle = 0
-        set nofen
-        echo "fold disable"
-    endif
-endfunction
-nmap <leader>f :call ToggleAutoFolds()<CR>
+" let g:auto_folds_toggle = 0
+" function! g:ToggleAutoFolds()
+"     if (g:auto_folds_toggle == 0)
+"         let g:auto_folds_toggle = 1
+"         set fen
+"         echo "fold enable"
+"     else
+"         let g:auto_folds_toggle = 0
+"         set nofen
+"         echo "fold disable"
+"     endif
+" endfunction
+" nmap <leader>f :call ToggleAutoFolds()<CR>
+
 " function! g:ToggleAutoFolds(mode)
 "     if (a:mode == 'manual')
 "         let g:auto_folds_toggle = 'manual'
@@ -236,6 +242,7 @@ map <silent> ge <Plug>CamelCaseMotion_ge
 
 
 "--- Nedtree ----"
+let g:NERDTreeNodeDelimiter = "\u00a0"
 nmap <C-b> :NERDTreeToggle<CR>
 nmap <C-f> :NERDTreeFind<CR>
 
@@ -273,6 +280,7 @@ let g:jsdoc_input_description = 1
 let g:jsdoc_access_descriptions = 1
 let g:jsdoc_underscore_private = 1
 let g:jsdoc_enable_es6 = 1
+let g:jsdoc_tags = {} | let g:jsdoc_tags['returns'] = 'return'
 
 map <leader>d :JsDoc <cr>
 vmap * y/<C-r>"<CR>
@@ -325,9 +333,17 @@ set completefunc=NearestComplete
 set completeopt=menu
 
 inoremap <silent><expr> <C-n>      pumvisible() ? "\<C-n>" : "\<C-x><C-u>"
-imap <expr> <Esc>      pumvisible() ? "\<C-e>" : "\<Esc>"
+imap <expr> <Esc>      pumvisible() ? "\<C-y><Esc>" : "\<Esc>"
 imap <expr> <CR>       pumvisible() ? "\<C-y>" : "\<CR>"
 " ---
 
+" whenever vim crashes it's handy to delete swaps
+abbrev clearswaps !rm ~/.vim/swap/*
+abbrev dswaps clearswaps
+abbrev cswaps clearswaps
+
 " minimal status line (displays git repo)
 set statusline=%<%f=%{LinterStatus()}\ %h%m%r%=%{fugitive#statusline()}\ \ %-14.(%l,%c%V%)\%p%%
+
+" Markdown preview
+let g:mkdp_command_for_global = 1
