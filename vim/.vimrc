@@ -15,7 +15,8 @@ call neobundle#begin(expand('~/.vim/bundle/'))
 " Let NeoBundle manage NeoBundle
 " Required:
 NeoBundleFetch 'Shougo/neobundle.vim'
-
+NeoBundle 'tpope/vim-pathogen'
+NeoBundle 'cohama/agit.vim'
 NeoBundle 'airblade/vim-gitgutter'
 NeoBundle "Shougo/unite.vim"
 NeoBundle "Shougo/unite-outline"
@@ -63,10 +64,13 @@ NeoBundle 'dylanaraps/crayon'
 NeoBundle 'tomasiser/vim-code-dark'
 NeoBundle 'nightsense/seabird'
 NeoBundle 'marcopaganini/termschool-vim-theme'
+NeoBundle 'manotech/jellybeans.vim'
 
 " --------- JS --------- "
-" NeoBundle 'jelera/vim-javascript-syntax'
+NeoBundle 'jelera/vim-javascript-syntax'
 NeoBundle 'Sefima/vim-nearest-complete-improved'
+" NeoBundle "neoclide/coc.nvim"
+" NeoBundle "ludovicchabant/vim-gutentags"
 " NeoBundleLazy 'maralla/completor.vim', {'autoload':{'filetypes':['javascript', 'vue']}}
 NeoBundleLazy 'w0rp/ale', {'autoload':{'filetypes':['javascript', 'vue', 'css', 'scss', 'sass']}}
 NeoBundleLazy 'jelera/vim-javascript-syntax', {'autoload':{'filetypes':['javascript', 'vue']}}
@@ -92,7 +96,8 @@ set bg=dark
 " colorscheme gruvbox
 " colorscheme solarized8_dark
 " colorscheme one
-colorscheme OceanicNext
+" colorscheme OceanicNext
+colorscheme jellybeans
 
 set rtp+=~/.fz
 set rtp+=~/Documents/projects/perso/dotfiles-that-fly/snippets
@@ -283,7 +288,7 @@ let g:jsdoc_enable_es6 = 1
 let g:jsdoc_tags = {} | let g:jsdoc_tags['returns'] = 'return'
 
 map <leader>d :JsDoc <cr>
-vmap * y/<C-r>"<CR>
+vmap <leader>* y/<C-r>"<CR>
 
 " --- Completor ---"
 let g:completor_min_chars=3
@@ -295,14 +300,14 @@ let g:ale_lint_on_text_changed=1
 let g:ale_lint_on_enter=0
 " let g:ale_statusline_format = ['⨉', '⚠', '⬥']
 let g:ale_sign_error="x"
-let g:ale_sign_warning="!"
+let g:ale_sign_warning="⚠"
 let g:ale_sign_column_always = 1
 
 " ---- FZF ---- "
 "let $FZF_DEFAULT_COMMAND = 'ag -l -g "'"
 
 "Tagbag
-let g:tagbar_ctags_bin='/usr/bin/ctags-exuberant'
+" let g:tagbar_ctags_bin='/usr/bin/ctags-exuberant'
 
 " let g:UltiSnipsExpandTrigger="<tab>"
 " let g:UltiSnipsJumpForwardTrigger="<c-b>"
@@ -322,7 +327,7 @@ function! LinterStatus() abort
    let l:all_non_errors = l:counts.total - l:all_errors
 
    return l:counts.total == 0 ? 'OK' : printf(
-               \   '%dW %dE',
+               \   '%d⚠ %dx',
                \   all_non_errors,
                \   all_errors
                \)
@@ -344,6 +349,23 @@ abbrev cswaps clearswaps
 
 " minimal status line (displays git repo)
 set statusline=%<%f=%{LinterStatus()}\ %h%m%r%=%{fugitive#statusline()}\ \ %-14.(%l,%c%V%)\%p%%
+" set statusline=%<%f=%{LinterStatus()}\ %h%m%r%=%{fugitive#statusline()}\ \ %-14.(%l,%c%V%)\%p%%%{gutentags#statusline()}
 
 " Markdown preview
 let g:mkdp_command_for_global = 1
+
+" ==== Coc.vim ====
+" set updatetime=300
+" set noshowmode
+"
+" " remap keys for gotos
+" nmap <silent> gd <Plug>(coc-definition)
+" nmap <silent> gy <Plug>(coc-type-definition)
+" nmap <silent> gi <Plug>(coc-implementation)
+" nmap <silent> gr <Plug>(coc-references)
+"
+" " Highlight symbol under cursor on CursorHold
+" autocmd CursorHold * silent call CocActionAsync('highlight')
+"
+" " Remap for rename current word
+" nmap <leader>rn <Plug>(coc-rename)
